@@ -39,3 +39,21 @@
     )
 
 )
+
+(defn get-all-peers [index]
+   (clojure.set/union (column-peers index)
+                      (row-peers index)
+                      (region-peers index)))
+
+(defn eliminate-possible-value [value board index]
+  (assoc board index 
+    (disj 
+      (nth board index) 
+      value))
+  )
+
+(defn set-value-of-cell [board index value]
+  (let [peers (get-all-peers index)
+        board-with-value-set (assoc board index #{value})]
+    (reduce (partial eliminate-possible-value value) board-with-value-set peers)))
+

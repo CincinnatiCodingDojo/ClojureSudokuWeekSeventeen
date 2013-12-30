@@ -30,11 +30,30 @@
   (get-group-row-index 13 ) => 0
   (get-group-row-index 40 ) => 27)
 
-(fact "region-peers should return the indicies of the cells in the region"
+(fact "region-peers should return the indices of the cells in the region"
   (region-peers 40 ) => #{30 31 32 39 41 48 49 50}
   (region-peers 26 ) => #{ 6  7  8 15 16 17 24 25}
   )
 
+(fact "getting all peers gets all peers of a given cell"
+  (get-all-peers 40) => #{4 13 22 30 31 32 36 37 38 39 41 42 43 44 48 49 50 58 67 76}
+  (get-all-peers 40) => (contains (row-peers 40) :in-any-order :gaps-ok)
+  (get-all-peers 40) => (contains (column-peers 40) :in-any-order :gaps-ok)
+  (get-all-peers 40) => (contains (region-peers 40) :in-any-order :gaps-ok)
+  )
+
 (def tabula-rasa
-  (-> (repeat 81 #{1 2 3 4 5 6 7 8 9})
-      vector))
+  (->> (repeat 81 #{1 2 3 4 5 6 7 8 9})
+      (apply vector))
+)
+
+(fact "setting the cell value returns a board with that value set"
+  (set-value-of-cell tabula-rasa 0 1) => #(= (nth %  0) #{1})
+  (set-value-of-cell tabula-rasa 0 1) => #(= (nth % 1) #{2 3 4 5 6 7 8 9})
+  )
+
+(fact "eliminating a possibility from a cell removes the value from the set"
+  (eliminate-possible-value 1 tabula-rasa 9) => #(= (nth % 9) #{2 3 4 5 6 7 8 9})
+  (eliminate-possible-value 1 tabula-rasa 20) => #(= (nth % 20) #{2 3 4 5 6 7 8 9}))
+
+;(fact "trying to set the value of a cell that is not a possibility ")
